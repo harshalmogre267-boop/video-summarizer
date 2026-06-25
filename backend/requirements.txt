@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+pydantic-settings
+google-generativeai
+youtube-transcript-api
+pyjwt
+bcrypt
+numpy
+python-dotenv
+requests
+email-validator
+psycopg[binary]

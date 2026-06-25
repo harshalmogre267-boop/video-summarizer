@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: video-summarizer-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: video-summarizer-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: models/gemini-2.5-flash
+
+databases:
+  - name: video-summarizer-db
+    databaseName: video_summarizer
+    user: video_summarizer
