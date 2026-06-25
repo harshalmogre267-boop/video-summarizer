@@ -1,10 +1,28 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base
+from app.database import engine, Base, SessionLocal
 from app.routes import auth, video, history
+from app.models import User
+from app.auth import ANONYMOUS_USER_ID
 
 # Initialize SQLite database and create tables
 Base.metadata.create_all(bind=engine)
+
+# Create anonymous user if it doesn't exist
+db = SessionLocal()
+try:
+    anonymous_user = db.query(User).filter(User.id == ANONYMOUS_USER_ID).first()
+    if not anonymous_user:
+        anonymous_user = User(
+            id=ANONYMOUS_USER_ID,
+            name="Anonymous User",
+            email="anonymous@localhost",
+            password_hash="disabled"
+        )
+        db.add(anonymous_user)
+        db.commit()
+finally:
+    db.close()
 
 app = FastAPI(
     title="YouTube Summarizer API",

@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Search, Clock, Link as LinkIcon, User, AlertCircle, ArrowRight } from 'lucide-react';
+import { Search, Clock, Link as LinkIcon, AlertCircle, ArrowRight } from 'lucide-react';
 import { Youtube } from '../../components/Icons';
-import { api, getAuthToken } from '../../services/api';
+import { api } from '../../services/api';
 
 
 interface VideoCard {
@@ -20,7 +19,6 @@ interface VideoCard {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [history, setHistory] = useState<VideoCard[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
@@ -29,14 +27,8 @@ export default function DashboardPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = getAuthToken();
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
     fetchHistory();
-  }, [router]);
+  }, []);
 
   const fetchHistory = async () => {
     try {
