@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "models/gemini-2.5-flash"
     FRONTEND_ORIGINS: str = "http://localhost:3000,http://localhost:3001,https://video-summarizer-weld.vercel.app"
+    YOUTUBE_PROXY_URL: str = ""
 
     model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 

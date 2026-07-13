@@ -1,6 +1,8 @@
 import re
 import requests
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import GenericProxyConfig
+from app.config import settings
 
 def _transcript_segment_text(segment) -> str:
     """
@@ -37,7 +39,14 @@ def get_youtube_transcript(video_id: str) -> str:
     Tries to retrieve English transcript first, falling back to any available language.
     """
     try:
-        transcript_list = YouTubeTranscriptApi().list(video_id)
+        proxy_config = None
+        if settings.YOUTUBE_PROXY_URL:
+            proxy_config = GenericProxyConfig(
+                http_url=settings.YOUTUBE_PROXY_URL,
+                https_url=settings.YOUTUBE_PROXY_URL,
+            )
+
+        transcript_list = YouTubeTranscriptApi(proxy_config=proxy_config).list(video_id)
         
         # Try to find English first
         try:
@@ -55,7 +64,13 @@ def get_youtube_transcript(video_id: str) -> str:
         return " ".join(text_list)
         
     except Exception as e:
-        raise ValueError(f"Failed to fetch video transcript: {str(e)}")
+        metadata = get_video_metadata(video_id)
+        return (
+            "Transcript unavailable. YouTube blocked transcript access from the backend host. "
+            f"Use the visible video metadata instead. Title: {metadata['title']}. "
+            f"Author: {metadata['author']}. URL: {metadata['youtube_url']}. "
+            f"Original transcript error: {str(e)}"
+        )
 
 
 

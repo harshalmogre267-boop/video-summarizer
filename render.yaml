@@ -18,6 +18,8 @@ services:
         value: models/gemini-2.5-flash
       - key: FRONTEND_ORIGINS
         value: https://video-summarizer-weld.vercel.app
+      - key: YOUTUBE_PROXY_URL
+        sync: false
 
 databases:
   - name: video-summarizer-db
