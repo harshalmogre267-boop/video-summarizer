@@ -1,4 +1,11 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+function getBaseUrl(): string {
+  const configuredUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+  const trimmedUrl = configuredUrl.replace(/\/+$/, '');
+
+  return trimmedUrl.endsWith('/api') ? trimmedUrl : `${trimmedUrl}/api`;
+}
+
+const BASE_URL = getBaseUrl();
 
 export function getAuthToken(): string | null {
   if (typeof window !== 'undefined') {

@@ -3,7 +3,9 @@ import os
 from fastapi.testclient import TestClient
 
 # Set up test database or settings override if needed before importing
-os.environ["DATABASE_URL"] = "sqlite:///./test_app.db"
+TEST_DB_PATH = "C:/tmp/video_summarizer_test.db"
+os.makedirs(os.path.dirname(TEST_DB_PATH), exist_ok=True)
+os.environ["DATABASE_URL"] = f"sqlite:///{TEST_DB_PATH}"
 
 from app.main import app
 from app.database import engine, Base
@@ -20,9 +22,9 @@ class TestBackendAPI(unittest.TestCase):
     def tearDownClass(cls):
         # Clean up test database file
         Base.metadata.drop_all(bind=engine)
-        if os.path.exists("test_app.db"):
+        if os.path.exists(TEST_DB_PATH):
             try:
-                os.remove("test_app.db")
+                os.remove(TEST_DB_PATH)
             except OSError:
                 pass
 

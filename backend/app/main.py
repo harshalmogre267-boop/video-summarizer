@@ -4,6 +4,7 @@ from app.database import engine, Base, SessionLocal
 from app.routes import auth, video, history
 from app.models import User
 from app.auth import ANONYMOUS_USER_ID
+from app.config import settings
 
 # Initialize SQLite database and create tables
 Base.metadata.create_all(bind=engine)
@@ -30,10 +31,16 @@ app = FastAPI(
     version="1.0"
 )
 
-# Configure CORS to allow access from local frontend applications
+allowed_origins = [
+    origin.strip()
+    for origin in settings.FRONTEND_ORIGINS.split(",")
+    if origin.strip()
+]
+
+# Configure CORS to allow access from local and configured production frontends.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust in production environments
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -50,3 +57,7 @@ def read_root():
         "status": "healthy",
         "service": "AI-Powered YouTube Video Summarizer & Knowledge Assistant API"
     }
+
+@app.get("/api/health")
+def read_api_health():
+    return read_root()

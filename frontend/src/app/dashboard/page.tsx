@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Clock, Link as LinkIcon, AlertCircle, ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Search, Clock, Link as LinkIcon, AlertCircle, ArrowRight, User } from 'lucide-react';
 import { Youtube } from '../../components/Icons';
 import { api } from '../../services/api';
 
@@ -19,6 +20,7 @@ interface VideoCard {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [history, setHistory] = useState<VideoCard[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);

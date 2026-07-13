@@ -16,6 +16,8 @@ services:
         sync: false
       - key: GEMINI_MODEL
         value: models/gemini-2.5-flash
+      - key: FRONTEND_ORIGINS
+        value: https://video-summarizer-weld.vercel.app
 
 databases:
   - name: video-summarizer-db
