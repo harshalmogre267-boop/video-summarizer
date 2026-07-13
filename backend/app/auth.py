@@ -8,7 +8,7 @@ from app.config import settings
 from app.database import get_db
 from app.models import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 ANONYMOUS_USER_ID = 1  # Default anonymous user ID
 
 def hash_password(password: str) -> str:
@@ -33,22 +33,35 @@ def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
+def get_anonymous_user(db: Session) -> User:
+    user = db.query(User).filter(User.id == ANONYMOUS_USER_ID).first()
+    if user:
+        return user
+
+    user = User(
+        id=ANONYMOUS_USER_ID,
+        name="Anonymous User",
+        email="anonymous@localhost",
+        password_hash="disabled",
     )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    if not token:
+        return get_anonymous_user(db)
 
     try:
         payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
-            raise credentials_exception
+            return get_anonymous_user(db)
     except jwt.PyJWTError:
-        raise credentials_exception
+        return get_anonymous_user(db)
         
     user = db.query(User).filter(User.email == email).first()
     if user is None:
-        raise credentials_exception
+        return get_anonymous_user(db)
     return user

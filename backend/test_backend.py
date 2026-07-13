@@ -65,10 +65,11 @@ class TestBackendAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["email"], "test@example.com")
         
-        # Profile fetch (Unauthenticated / Bad token)
+        # Profile fetch (Unauthenticated / Bad token falls back to anonymous mode)
         bad_headers = {"Authorization": "Bearer badtoken123"}
         response = client.get("/api/auth/me", headers=bad_headers)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["email"], "anonymous@localhost")
 
 if __name__ == "__main__":
     unittest.main()

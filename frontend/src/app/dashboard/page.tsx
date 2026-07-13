@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Clock, Link as LinkIcon, AlertCircle, ArrowRight, User } from 'lucide-react';
 import { Youtube } from '../../components/Icons';
-import { api, getAuthToken } from '../../services/api';
+import { api } from '../../services/api';
 
 
 interface VideoCard {
@@ -29,13 +29,8 @@ export default function DashboardPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!getAuthToken()) {
-      router.push('/login');
-      return;
-    }
-
     fetchHistory();
-  }, [router]);
+  }, []);
 
   const fetchHistory = async () => {
     try {

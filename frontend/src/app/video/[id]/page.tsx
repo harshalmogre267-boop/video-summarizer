@@ -7,7 +7,7 @@ import {
   Copy, Check, Send, Sparkles, ChevronDown, ChevronUp, AlertCircle, ArrowLeft 
 } from 'lucide-react';
 import { Youtube } from '../../../components/Icons';
-import { api, getAuthToken } from '../../../services/api';
+import { api } from '../../../services/api';
 
 
 // Self-contained Markdown renderer for React 19 compatibility
@@ -143,13 +143,7 @@ export default function VideoWorkspace() {
   });
   const [loadingSocial, setLoadingSocial] = useState(false);
 
-  // Auth Guard
   useEffect(() => {
-    const token = getAuthToken();
-    if (!token) {
-      router.push('/login');
-      return;
-    }
     loadVideoData();
   }, [videoDbId]);
 

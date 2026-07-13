@@ -51,6 +51,21 @@ function normalizeApiError(message: string): string {
   }
   return message;
 }
+
+function errorMessageFromJson(errorJson: any): string {
+  const detail = errorJson.detail;
+
+  if (Array.isArray(detail)) {
+    return detail.map((item) => item.msg || JSON.stringify(item)).join(', ');
+  }
+
+  if (typeof detail === 'string') {
+    return detail;
+  }
+
+  return JSON.stringify(errorJson);
+}
+
 interface RequestOptions extends RequestInit {
   bodyData?: any;
 }
@@ -87,7 +102,7 @@ async function apiRequest(endpoint: string, options: RequestOptions = {}) {
     let errorDetail = 'An error occurred';
     try {
       const errJson = await response.json();
-      errorDetail = errJson.detail || JSON.stringify(errJson);
+      errorDetail = errorMessageFromJson(errJson);
     } catch {
       errorDetail = await response.text() || response.statusText;
     }
